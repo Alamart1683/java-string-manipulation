@@ -1,0 +1,83 @@
+Задание 1:
+public class Exmp { int a = 55; int b; final int const = 42; String str1; Scanner sc = new Scanner(System.in); String str2; public static void main () { b = sc.nextInt(); str2 = sc.nextLine(); while (a > 50) { a--;} System.out.print (a + b);}}
+
+Задание 2 (4-й пункт - задание 1):
+Наступила прекрасная золотая осень. Пожелтели кусты и деревья. Тихо дремлет водная гладь. День шел к завершению.
+
+Задание 3 (3-й пункт - задание 1):
+12 14 -14.88 20 2,28 -10 -14.53 0.476 -25 0,1683
+
+Приложение (Метод составления строки объектов из Задания 1 с помощью regex):
+
+// Регулярная версия поиска объектов в коде
+    public static void regular_objects_string()
+    {
+        if (code == "")
+        {
+            System.out.println("Ошибка: не был введен код");
+            System.out.println();
+        }
+        else
+        {
+            String objects_string = "Список объектов:"; // Строка с списком найденных объектов
+            int start_length = objects_string.length(); // Изначальная длина строки объектов
+            String string_pattern = "(String)\\s+\\w+\\s+"; // regex для объявления строк
+            String array_pattern = "\\w+((\\[\\w*\\]\\[\\w*\\])|\\[\\w*\\])\\s+\\w+"; // regex для массива без new
+            String new_array_pattern = "\\w+\\s*(=)\\s*(new)\\s+\\w+((\\[\\w*\\]\\[\\w*\\])|\\[\\w*\\])"; // regex для массива с new
+            String objects_pattern = "\\w+\\s*(=)\\s*(new)\\s+\\w+"; // regex для объектов объвляемых с помощью new
+            // Объединение паттернов
+            String united_pattern_string = "(" + string_pattern + ")|(" + array_pattern + ")|(" + new_array_pattern + ")|(" + objects_pattern + ")";
+            Pattern united_pattern = Pattern.compile(united_pattern_string);
+            Matcher matcher = united_pattern.matcher(code); // Контейнер совпадений в коде
+
+            while (matcher.find())
+            {
+                // Проверка на соответствие типу строки
+                if (matcher.group().matches(string_pattern))
+                {
+                    // Проверка на повторение
+                    if (objects_string.indexOf(matcher.group().split("[\\s]")[1]) == - 1)
+                    {
+                        objects_string = objects_string + " " + matcher.group().split("[\\s+]")[0] + " " + matcher.group().split("[\\s]")[1] + ",";
+                    }
+                }
+                // Проверка на соответствие типу массива
+                else if (matcher.group().matches(array_pattern))
+                {
+                    // Проверка на повторение
+                    if (objects_string.indexOf(matcher.group().split("[\\s+]")[1]) == - 1)
+                    {
+                        objects_string = objects_string + " " + matcher.group().split("[\\s+]")[0] + " " + matcher.group().split("[\\s]")[1] + ",";
+                    }
+                }
+                // Проверка на соответствие типу массива, объявляяемому через new
+                else if (matcher.group().matches(new_array_pattern))
+                {
+                    if (objects_string.indexOf(matcher.group().split("[\\s+]")[0]) == - 1)
+                    {
+                        objects_string = objects_string + " " + matcher.group().split("[\\s*]")[matcher.group().split("[\\s*]").length - 1] + " " + matcher.group().split("[\\s*]")[0] + ",";
+                    }
+                }
+                // Проверка на соотвествие типу объекта общего вида
+                else if (matcher.group().matches(objects_pattern))
+                {
+                    if (objects_string.indexOf(matcher.group().split("[\\s*]")[0]) == - 1)
+                    {
+                        objects_string = objects_string + " " + matcher.group().split("[\\s*]")[matcher.group().split("[\\s*]").length - 1] + " " + matcher.group().split("[\\s*]")[0] + ",";
+                    }
+                }
+            }
+	    // Редактирование конца строки
+            if (objects_string != "" && (objects_string.length() > start_length))
+            {
+                objects_string = objects_string.substring(0, objects_string.length() - 1);
+                System.out.println(objects_string);
+                System.out.println();
+            }
+            else
+            {
+                System.out.println("В исходном коде объекты не были обнаружены");
+                System.out.println();
+            }
+        }
+    }
